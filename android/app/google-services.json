@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "321503427583",
+    "firebase_url": "https://lastorder-372ad.firebaseio.com",
+    "project_id": "lastorder-372ad",
+    "storage_bucket": "lastorder-372ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321503427583:android:857277bea366f05d4d45ca",
+        "android_client_info": {
+          "package_name": "com.lastorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321503427583-o6hk9ual84dtu3oj2q8tdk2qj42b8igr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lastorder",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "321503427583-gef12gpoeg0ii8pcqldga97i4eimunu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOwZPt8WaJ3nULnCmPwH8vRGabqLf_YFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321503427583-gef12gpoeg0ii8pcqldga97i4eimunu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

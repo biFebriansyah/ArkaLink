@@ -7,6 +7,7 @@ import Login from './Screen/Login/Login';
 import Regis from './Screen/Regis/Regis';
 import Home from './Screen/Home/Home';
 import Profile from './Components/Profile/Profile';
+import Landing from './Screen/Landing/Landing';
 
 const App = createStackNavigator({
 
@@ -18,6 +19,12 @@ const App = createStackNavigator({
     },
     login: {
         screen: Login,
+        navigationOptions: {
+            header: null
+        }
+    },
+    landing: {
+        screen: Landing,
         navigationOptions: {
             header: null
         }
@@ -51,7 +58,7 @@ const App = createStackNavigator({
     },
 
 }, {
-    initialRouteName: 'Apps',
+    initialRouteName: 'landing',
 })
 
 const Routes = createAppContainer(App)
