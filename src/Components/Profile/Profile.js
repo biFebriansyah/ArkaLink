@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, TouchableHighlight } from 'react-native'
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import { Header } from 'native-base';
-import Color from '../../../public/Style/Color'
+import Color from '../../../public/Style/Color';
+import { firebase } from '@react-native-firebase/auth';
 
 export class Profile extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-
+            name: ''
         }
         this.goBack = this.goBack.bind(this);
     }
@@ -19,24 +20,42 @@ export class Profile extends Component {
         goBack();
     }
 
+    Logout = () => {
+        firebase.auth().signOut()
+    }
+
+    componentDidMount() {
+        const { displayName } = firebase.auth().currentUser
+        this.setState({ name: displayName })
+    }
+
     render() {
         return (
-            <View>
+            <>
                 <Header
                     androidStatusBarColor={Color.indicator}
                     style={style.Header}>
                     <IconAnt name="arrowleft" size={24} color={Color.TextLight} onPress={this.goBack} style={style.Icon} />
                     <Text style={{ color: '#FFF', fontSize: 20, fontWeight: 'bold' }}>
-                        Febriansyah
+                        {this.state.name}
                     </Text>
                 </Header>
-                <Text> Hello User </Text>
-            </View>
+                <View style={style.container}>
+                    <TouchableHighlight onPress={this.Logout}>
+                        <Text>Logout</Text>
+                    </TouchableHighlight>
+                </View>
+            </>
         )
     }
 }
 
 const style = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     Header: {
         backgroundColor: Color.primary,
         alignItems: 'center',

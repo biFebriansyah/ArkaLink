@@ -8,29 +8,12 @@ import Regis from './Screen/Regis/Regis';
 import Home from './Screen/Home/Home';
 import Profile from './Components/Profile/Profile';
 import Landing from './Screen/Landing/Landing';
+import Loading from './Components/Loading/Loading';
 
-const App = createStackNavigator({
+const AppStack = createStackNavigator({
 
     home: {
         screen: Home,
-        navigationOptions: {
-            header: null
-        }
-    },
-    login: {
-        screen: Login,
-        navigationOptions: {
-            header: null
-        }
-    },
-    landing: {
-        screen: Landing,
-        navigationOptions: {
-            header: null
-        }
-    },
-    regis: {
-        screen: Regis,
         navigationOptions: {
             header: null
         }
@@ -58,9 +41,47 @@ const App = createStackNavigator({
     },
 
 }, {
-    initialRouteName: 'landing',
+    initialRouteName: 'Apps',
 })
 
-const Routes = createAppContainer(App)
+const AuthStack = createStackNavigator({
+
+    login: {
+        screen: Login,
+        navigationOptions: {
+            header: null
+        }
+    },
+    regis: {
+        screen: Regis,
+        navigationOptions: {
+            header: null
+        }
+    },
+    landing: {
+        screen: Landing,
+        navigationOptions: {
+            header: null
+        }
+    },
+}, {
+    initialRouteName: 'landing'
+})
+
+const Routes = createAppContainer(createSwitchNavigator({
+
+    Auth: {
+        screen: AuthStack
+    },
+    App: {
+        screen: AppStack
+    },
+    LoadScreen: {
+        screen: Loading
+    }
+}, {
+    initialRouteName: 'LoadScreen',
+    headerMode: 'none'
+}))
 
 export default Routes

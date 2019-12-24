@@ -1,18 +1,26 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, StatusBar, Image, Text, } from 'react-native'
+import { View, StyleSheet, StatusBar, Image, Text, ToastAndroid } from 'react-native'
 import Color from '../../../public/Style/Color';
 import { Button, Item, Input, Label, Form } from 'native-base';
 import IconAnt from 'react-native-vector-icons/AntDesign';
+import { firebase } from '@react-native-firebase/auth';
+import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 
 export class Login extends Component {
+
     constructor(props) {
         super(props)
 
         this.state = {
-
+            email: '',
+            password: '',
+            visible: false,
+            errorMessage: null,
+            Onprosess: false
         }
 
         this.goBack = this.goBack.bind(this);
+        this.loginSubmit = this.loginSubmit.bind(this)
     }
 
     goBack() {
@@ -20,7 +28,72 @@ export class Login extends Component {
         goBack();
     }
 
+    hideToast = () => {
+        this.setState({
+            visible: false,
+        });
+    };
+
+
+
+    loginSubmit = () => {
+        this.setState({ Onprosess: true })
+        const { email, password } = this.state
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(res => {
+                this.setState({ Onprosess: false })
+            })
+            .catch(err => {
+                this.setState({
+                    errorMessage: err.message,
+                    visible: true
+                }, () => this.hideToast())
+            })
+    }
+
+    loginGoole = async () => {
+        this.setState({ Onprosess: true })
+        try {
+            const { accessToken, idToken } = await GoogleSignin.signIn();
+            const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken)
+            await firebase.auth().signInWithCredential(credential)
+            this.setState({ Onprosess: false })
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                this.setState({ Onprosess: false })
+                return
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                this.setState({
+                    errorMessage: "In Progress..",
+                    visible: true,
+                    Onprosess: false
+                }, () => this.hideToast())
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                this.setState({
+                    errorMessage: "Please Install Google Play Services",
+                    visible: true,
+                    Onprosess: false
+                }, () => this.hideToast())
+            } else {
+                this.setState({
+                    errorMessage: error.code || error.message,
+                    visible: true,
+                    Onprosess: false
+                }, () => this.hideToast())
+            }
+        }
+
+
+    }
+
     render() {
+        if (this.state.loding) {
+            return (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
         return (
             <View style={style.container}>
                 <IconAnt name="arrowleft" size={24} color={Color.TextLight} onPress={this.goBack} style={style.Back} />
@@ -31,20 +104,21 @@ export class Login extends Component {
                     </View>
                 </View>
                 <View style={style.bottomContent}>
+                    <Toast visible={this.state.visible} message={this.state.errorMessage} />
                     <Form style={style.form}>
                         <Item floatingLabel style={{ marginBottom: 10 }}>
-                            <Label >Username</Label>
-                            <Input style={{ marginTop: 10 }} />
+                            <Label >Email</Label>
+                            <Input style={{ marginTop: 10 }} onChangeText={email => this.setState({ email })} />
                         </Item>
                         <Item floatingLabel >
                             <Label>Password</Label>
-                            <Input style={{ marginTop: 10 }} />
+                            <Input style={{ marginTop: 10 }} secureTextEntry onChangeText={password => this.setState({ password })} />
                         </Item>
                     </Form>
-                    <Button style={style.btnLogin}>
+                    <Button style={style.btnLogin} onPress={this.loginSubmit}>
                         <Text style={{ color: Color.TextLight, fontFamily: 'Roboto-Bold' }}>Login</Text>
                     </Button>
-                    <Button style={style.btnLogin2}>
+                    <Button style={style.btnLogin2} onPress={this.loginGoole}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
                             <Image source={require('../../../public/Asset/Image/google.png')} style={style.Icon} />
                             <Text style={style.Text2}>Login With Google</Text>
@@ -56,13 +130,31 @@ export class Login extends Component {
     }
 }
 
+GoogleSignin.configure({
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+    webClientId: '321503427583-gef12gpoeg0ii8pcqldga97i4eimunu7.apps.googleusercontent.com',
+})
 
+
+const Toast = (props) => {
+    if (props.visible) {
+        ToastAndroid.showWithGravityAndOffset(
+            props.message,
+            ToastAndroid.LONG,
+            ToastAndroid.TOP,
+            1,
+            800,
+        );
+        return null;
+    }
+    return null;
+};
 
 const style = StyleSheet.create({
 
     container: {
         flex: 1,
-        backgroundColor: Color.primary
+        backgroundColor: Color.primary,
     },
     Text: {
         color: Color.TextLight
@@ -70,7 +162,7 @@ const style = StyleSheet.create({
     topContent: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     bottomContent: {
         flex: 2,

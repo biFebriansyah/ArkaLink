@@ -10,13 +10,18 @@ class Landing extends Component {
         this.state = {
 
         }
-        this.onLogin = this.onLogin.bind(this);
+        this.goLogin = this.goLogin.bind(this);
+        this.goRegis = this.goRegis.bind(this);
     }
 
 
-    onLogin() {
+    goLogin() {
         this.props.navigation.navigate('login')
     }
+    goRegis() {
+        this.props.navigation.navigate('regis')
+    }
+
     render() {
         return (
             <View style={style.container}>
@@ -27,10 +32,10 @@ class Landing extends Component {
                     </View>
                 </View>
                 <View style={style.bottomContent}>
-                    <Button style={style.btnLogin} onPress={this.onLogin}>
+                    <Button style={style.btnLogin} onPress={this.goLogin}>
                         <Text style={style.Text2}>Login</Text>
                     </Button>
-                    <TouchableHighlight style={style.btnLogin2}>
+                    <TouchableHighlight style={style.btnLogin2} onPress={this.goRegis}>
                         <Text style={style.Text}>Register</Text>
                     </TouchableHighlight>
                 </View>
