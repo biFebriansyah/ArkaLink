@@ -6,19 +6,34 @@ import IconAnt from 'react-native-vector-icons/AntDesign';
 import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { PermissionsAndroid } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import storage from '@react-native-firebase/storage';
+import uuid from 'uuid/v4';
 
 export class Regis extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
+            imgSource: 'D:\\Arkademy\\LastOrder\\LastOrder\\public\\Asset\\Image\\boy-1.png',
             latitude: '',
             longitude: '',
             name: '',
             email: '',
             password: '',
             errorMessage: null,
-            visible: false
+            visible: false,
+            avatar: [
+                require('../../../public/Asset/Image/boy-1.png'),
+                require('../../../public/Asset/Image/boy.png'),
+                require('../../../public/Asset/Image/girl.png'),
+                require('../../../public/Asset/Image/girl-1.png'),
+                require('../../../public/Asset/Image/man.png'),
+                require('../../../public/Asset/Image/man-1.png'),
+                require('../../../public/Asset/Image/man-2.png'),
+                require('../../../public/Asset/Image/man-3.png'),
+                require('../../../public/Asset/Image/man-4.png'),
+            ]
         }
         this.goBack = this.goBack.bind(this)
         this.submitRegis = this.submitRegis.bind(this);
@@ -29,10 +44,50 @@ export class Regis extends Component {
         goBack();
     }
 
+    uploadImage = () => {
+        const ext = this.state.imgSource.split('.').pop(); // Extract image extension
+        const filename = `${uuid()}.${ext}`; // Generate unique name
+        this.setState({ uploading: true });
+        storage()
+            .ref(`userimages/${filename}`)
+            .putFile(this.state.imgSource)
+            .on(
+                firebase.storage.TaskEvent.STATE_CHANGED,
+                snapshot => {
+                    let state = {};
+                    state = {
+                        ...state,
+                        progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
+                    };
+                    if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                        const allImages = this.state.images;
+                        allImages.push(snapshot.downloadURL);
+                        state = {
+                            ...state,
+                            uploading: false,
+                            imgSource: '',
+                            imageUri: '',
+                            progress: 0,
+                            images: allImages
+                        };
+                        AsyncStorage.setItem('images', JSON.stringify(allImages));
+                    }
+                    this.setState(state);
+                },
+                error => {
+                    unsubscribe();
+                    alert('Sorry, Try again.');
+                }
+            );
+    };
+
+
     async componentDidMount() {
+        const random = Math.floor(Math.random() * 9)
         try {
-            const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            const Location = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+            const Storage = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+            if (Location === PermissionsAndroid.RESULTS.GRANTED) {
                 Geolocation.getCurrentPosition(
                     (position) => {
                         const { latitude, longitude } = position.coords
@@ -50,42 +105,22 @@ export class Regis extends Component {
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
                 );
             } else {
-                const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    Geolocation.getCurrentPosition(
-                        (position) => {
-                            const { latitude, longitude } = position.coords
-                            this.setState({ latitude, longitude })
-                        },
-                        (error) => {
-                            this.setState({
-                                errorMessage: "Check youre GPS",
-                                visible: true
-                            }, () => {
-                                this.hideToast()
-                            })
-                            return
-                        },
-                        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-                    );
-                } else {
-                    this.setState({
-                        errorMessage: "location denied",
-                        visible: true
-                    }, () => {
-                        this.hideToast()
-                    })
-                    return
-                }
+                this.setState({
+                    errorMessage: "location denied",
+                    visible: true
+                }, () => {
+                    this.hideToast()
+                })
+                return
             }
-        } catch (err) {
+
+        } catch (error) {
             this.setState({
-                errorMessage: err,
+                errorMessage: "SomeThing Worng",
                 visible: true
             }, () => {
                 this.hideToast()
             })
-            return
         }
     }
 

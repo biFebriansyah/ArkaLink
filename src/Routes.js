@@ -10,6 +10,7 @@ import Profile from './Components/Profile/Profile';
 import Landing from './Screen/Landing/Landing';
 import Loading from './Components/Loading/Loading';
 import Maps from './Screen/Maps/Maps';
+import Chat from './Screen/chat/Chat';
 
 const AppStack = createStackNavigator({
 
@@ -21,6 +22,12 @@ const AppStack = createStackNavigator({
     },
     profiles: {
         screen: Profile,
+        navigationOptions: {
+            header: null
+        }
+    },
+    PersonalChat: {
+        screen: Chat,
         navigationOptions: {
             header: null
         }
