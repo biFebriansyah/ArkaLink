@@ -4,12 +4,16 @@ import Color from '../../../public/Style/Color';
 import { Button, Item, Input, Label, Form } from 'native-base';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import { firebase } from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
+import { PermissionsAndroid } from 'react-native';
 
 export class Regis extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
+            latitude: '',
+            longitude: '',
             name: '',
             email: '',
             password: '',
@@ -23,6 +27,66 @@ export class Regis extends Component {
     goBack() {
         const { goBack } = this.props.navigation;
         goBack();
+    }
+
+    async componentDidMount() {
+        try {
+            const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                Geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords
+                        this.setState({ latitude, longitude })
+                    },
+                    (error) => {
+                        this.setState({
+                            errorMessage: "Check youre GPS",
+                            visible: true
+                        }, () => {
+                            this.hideToast()
+                        })
+                        return
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );
+            } else {
+                const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    Geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords
+                            this.setState({ latitude, longitude })
+                        },
+                        (error) => {
+                            this.setState({
+                                errorMessage: "Check youre GPS",
+                                visible: true
+                            }, () => {
+                                this.hideToast()
+                            })
+                            return
+                        },
+                        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                    );
+                } else {
+                    this.setState({
+                        errorMessage: "location denied",
+                        visible: true
+                    }, () => {
+                        this.hideToast()
+                    })
+                    return
+                }
+            }
+        } catch (err) {
+            this.setState({
+                errorMessage: err,
+                visible: true
+            }, () => {
+                this.hideToast()
+            })
+            return
+        }
     }
 
     hideToast = () => {
@@ -45,6 +109,17 @@ export class Regis extends Component {
         }
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(res => {
+                console.log(res)
+                database().ref('/users/' + res.user.uid)
+                    .set({
+                        name: this.state.name,
+                        status: 'Online',
+                        email: this.state.email,
+                        photo: 'https://res.cloudinary.com/erdinsuharyadi/image/upload/v1577315841/hiringapp/assets/ava1.png',
+                        latitude: this.state.latitude || null,
+                        longitude: this.state.longitude || null,
+                        id: res.user.uid,
+                    })
                 return res.user.updateProfile({
                     displayName: this.state.name
                 })

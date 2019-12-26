@@ -9,6 +9,7 @@ import Home from './Screen/Home/Home';
 import Profile from './Components/Profile/Profile';
 import Landing from './Screen/Landing/Landing';
 import Loading from './Components/Loading/Loading';
+import Maps from './Screen/Maps/Maps';
 
 const AppStack = createStackNavigator({
 
@@ -20,6 +21,12 @@ const AppStack = createStackNavigator({
     },
     profiles: {
         screen: Profile,
+        navigationOptions: {
+            header: null
+        }
+    },
+    maps: {
+        screen: Maps,
         navigationOptions: {
             header: null
         }

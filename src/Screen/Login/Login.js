@@ -4,6 +4,7 @@ import Color from '../../../public/Style/Color';
 import { Button, Item, Input, Label, Form } from 'native-base';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import { firebase } from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 
 export class Login extends Component {
@@ -54,10 +55,42 @@ export class Login extends Component {
     loginGoole = async () => {
         this.setState({ Onprosess: true })
         try {
-            const { accessToken, idToken } = await GoogleSignin.signIn();
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            const { idToken, accessToken } = userInfo
             const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken)
             await firebase.auth().signInWithCredential(credential)
+                .then(res => {
+                    const data = database().ref(`/users/${res.user.uid}`)
+                    if (data) {
+                        database().ref('/users/' + res.user.uid)
+                            .update({
+                                name: userInfo.user.name,
+                                status: 'Online',
+                                email: userInfo.user.email,
+                                photo: userInfo.user.photo,
+                                latitude: this.state.latitude || null,
+                                longitude: this.state.longitude || null,
+                                id: res.user.uid,
+                            })
+                    } else {
+                        database().ref('/users/' + res.user.uid)
+                            .set({
+                                name: userInfo.user.name,
+                                status: 'Online',
+                                email: userInfo.user.email,
+                                photo: userInfo.user.photo,
+                                latitude: this.state.latitude || null,
+                                longitude: this.state.longitude || null,
+                                id: res.user.uid,
+                            })
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
             this.setState({ Onprosess: false })
+
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 this.setState({ Onprosess: false })
