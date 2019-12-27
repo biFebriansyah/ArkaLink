@@ -33,7 +33,7 @@ export class Maps extends Component {
         this.setState({ region: newRegion })
     }
 
-    async componentDidMount() {
+    gateUserCoordinate = async () => {
         try {
             const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -61,9 +61,20 @@ export class Maps extends Component {
         }
     }
 
+    async componentDidMount() {
+        const data = this.props.navigation.getParam('item')
+        const lat = -6.6020341
+        const log = 106.8039733
+        const newMarker = { ...this.state.marker }
+        newMarker.latitude = lat
+        newMarker.longitude = log
+        console.log(newMarker)
+        this.setState({ marker: newMarker })
+    }
+
 
     render() {
-
+        console.log(this.state.marker)
         return (
             <View>
                 <View style={styles.container}>
@@ -71,6 +82,9 @@ export class Maps extends Component {
                         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                         style={styles.map}
                         region={this.state.region}
+                        showsTraffic={true}
+                        showsUserLocation={true}
+                        zoomControlEnabled={true}
 
                     >
                         <Marker

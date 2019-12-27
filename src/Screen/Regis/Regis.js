@@ -14,7 +14,6 @@ export class Regis extends Component {
         super(props)
 
         this.state = {
-            imgSource: 'D:\\Arkademy\\LastOrder\\LastOrder\\public\\Asset\\Image\\boy-1.png',
             latitude: '',
             longitude: '',
             name: '',
@@ -107,7 +106,6 @@ export class Regis extends Component {
         }
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then(res => {
-                console.log(res)
                 database().ref('/users/' + res.user.uid)
                     .set({
                         name: this.state.name,

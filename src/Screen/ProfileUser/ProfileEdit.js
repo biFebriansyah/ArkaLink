@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, PermissionsAndroid, ActivityIndicator } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, PermissionsAndroid, ActivityIndicator, ToastAndroid } from 'react-native'
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import IconAnt from 'react-native-vector-icons/AntDesign';
@@ -63,12 +63,13 @@ export class ProfileEdit extends Component {
                     height: 200,
                     cropping: true
                 }).then(image => {
-                    console.log(image.path);
                     this.setState({ imgSource: image, photoURL: image.path })
-                });
+                }).catch(err => {
+                    ToastAndroid.show('Cancel', ToastAndroid.LONG)
+                })
             }
         } catch (error) {
-            console.log(error)
+            ToastAndroid.show('Try Again', ToastAndroid.LONG)
         }
     }
 

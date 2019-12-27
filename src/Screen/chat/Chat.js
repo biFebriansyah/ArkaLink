@@ -69,7 +69,6 @@ export default class Chat extends Component {
     const userId = uid;
     const userName = displayName;
     const userAvatar = photoURL;
-    console.log(userId)
     this.setState({ userId, userName, userAvatar });
     database()
       .ref('messages')

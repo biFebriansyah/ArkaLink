@@ -61,7 +61,7 @@ export default class Home extends Component {
                     renderItem={({ item }) =>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('PersonalChat', { item })}>
                             <View style={styles.listItem}>
-                                <TouchableOpacity onPress={this.signOutUser}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('maps', { item })}>
                                     <Image source={{ uri: item.photo }} style={styles.pic} />
                                 </TouchableOpacity>
 
