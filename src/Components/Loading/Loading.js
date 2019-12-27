@@ -6,6 +6,7 @@ import { firebase } from '@react-native-firebase/auth';
 export class Loading extends Component {
 
     componentDidMount() {
+        console.log("Masuk loading")
         firebase.auth().onAuthStateChanged(user => {
             this.props.navigation.navigate(user ? 'App' : 'Auth')
         })

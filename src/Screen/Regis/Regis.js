@@ -70,7 +70,6 @@ export class Regis extends Component {
                             progress: 0,
                             images: allImages
                         };
-                        AsyncStorage.setItem('images', JSON.stringify(allImages));
                     }
                     this.setState(state);
                 },
@@ -156,9 +155,12 @@ export class Regis extends Component {
                         longitude: this.state.longitude || null,
                         id: res.user.uid,
                     })
-                return res.user.updateProfile({
+                res.user.updateProfile({
                     displayName: this.state.name,
                     photoURL: ImageUser
+                })
+                firebase.auth().onAuthStateChanged(user => {
+                    this.props.navigation.navigate(user ? 'LoadScreen' : 'Auth')
                 })
             })
             .catch(err => {

@@ -19,18 +19,23 @@ export class ProfileUser extends Component {
         super(props)
 
         this.state = {
-            name: auth().currentUser.displayName,
-            email: auth().currentUser.email,
-            avatar: auth().currentUser.photoURL,
-            uid: auth().currentUser.uid
+            name: '',
+            email: '',
+            avatar: 'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/boy_dcc9kc.png',
+            uid: ''
         }
 
-        this.go = this.go.bind(this);
     }
 
-    go() {
-        this.props.navigation.navigate('profiles')
+    goEdit = () => {
+        this.props.navigation.navigate('profileEdit')
     }
+
+    componentDidMount() {
+        const { displayName, email, photoURL, uid } = auth().currentUser
+        this.setState({ name: displayName, email, avatar: photoURL, uid })
+    }
+
 
     signOutUser = async () => {
         try {
@@ -75,7 +80,7 @@ export class ProfileUser extends Component {
                             <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>{this.state.email}</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }}>
+                    <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }} onPress={this.goEdit}>
                         <View style={{ flexDirection: 'row' }}>
                             <IonIcon name="ios-options" size={20} style={{ width: 20, height: 20, color: "black" }} />
                             <Text style={{ fontSize: 16, marginLeft: 6 }}>Option</Text>
@@ -124,7 +129,7 @@ const style = StyleSheet.create({
     },
     dataUser: {
         flex: 3,
-        marginTop: 50
+        marginTop: 50,
     }
 })
 
