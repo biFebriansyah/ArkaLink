@@ -5,20 +5,24 @@ import {
     Image,
     StyleSheet,
     Dimensions,
+    Platform,
     PermissionsAndroid,
+    TouchableOpacity,
+    SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Color from '../../../public/Style/Color';
 import { firebase } from '@react-native-firebase/auth';
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export class Friends extends Component {
+export class Mapss extends Component {
     constructor(props) {
         super(props);
 
@@ -35,6 +39,7 @@ export class Friends extends Component {
     componentDidMount = async () => {
         await this.getUser();
         await this.getLocation();
+        // const uid = await AsyncStorage.getItem('userid');
     };
 
     markerOnPress = () => {
@@ -72,13 +77,15 @@ export class Friends extends Component {
         } catch (err) {
             console.warn(err);
         }
-    }
-    getUser = async () => {
+    } getUser = async () => {
         const uid = await AsyncStorage.getItem('userid');
         this.setState({ uid: uid });
-        firebase.database().ref('/users').on('child_added', result => {
+        firebase.database().ref('/user').on('child_added', result => {
             let data = result.val();
             if (data !== null && data.id != uid) {
+                // console.log(data);
+                // let users = Object.values(data);
+                // console.log(users);
                 this.setState(prevData => {
                     return { userList: [...prevData.userList, data] };
                 });
@@ -86,28 +93,66 @@ export class Friends extends Component {
         });
     };
 
-
+    hasLocationPermission = async () => {
+        if (
+            Platform.OS === 'ios' ||
+            (Platform.OS === 'android' && Platform.Version < 23)
+        ) {
+            return true;
+        }
+        const hasPermission = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (hasPermission) {
+            return true;
+        }
+        const status = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (status === PermissionsAndroid.RESULTS.GRANTED) {
+            return true;
+        }
+        if (status === PermissionsAndroid.RESULTS.DENIED) {
+            ToastAndroid.show(
+                'Location Permission Denied By User.',
+                ToastAndroid.LONG,
+            );
+        } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+            ToastAndroid.show(
+                'Location Permission Revoked By User.',
+                ToastAndroid.LONG,
+            );
+        }
+        return false;
+    };
 
     getLocation = async () => {
+        const hasLocationPermission = await this.hasLocationPermission();
+
+        if (!hasLocationPermission) {
+            return;
+        }
 
         this.setState({ loading: true }, () => {
             Geolocation.getCurrentPosition(
                 position => {
                     let region = {
-                        latitude: Number(position.coords.latitude),
-                        longitude: Number(position.coords.longitude),
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
                         latitudeDelta: 0.00922,
                         longitudeDelta: 0.00421 * 1.5,
                     };
                     this.setState({
                         mapRegion: region,
-                        latitude: Number(position.coords.latitude),
-                        longitude: Number(position.coords.longitude),
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
                         loading: false,
                     });
+                    // console.warn(position);
                 },
                 error => {
                     this.setState({ errorMessage: error });
+                    // console.warn(error);
                 },
                 {
                     enableHighAccuracy: true,
@@ -134,7 +179,7 @@ export class Friends extends Component {
                     },
                 ]}>
                 <MapView
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '90%' }}
                     showsMyLocationButton={true}
                     showsIndoorLevelPicker={true}
                     showsUserLocation={true}
@@ -156,8 +201,8 @@ export class Friends extends Component {
                                 title={item.name}
                                 description={item.status}
                                 coordinate={{
-                                    latitude: Number(item.latitude) || 0,
-                                    longitude: Number(item.longitude) || 0,
+                                    latitude: item.latitude || 0,
+                                    longitude: item.longitude || 0,
                                 }}
                                 onCalloutPress={() => {
                                     this.props.navigation.navigate('FriendProfile', {
@@ -175,6 +220,18 @@ export class Friends extends Component {
                         );
                     })}
                 </MapView>
+                <TouchableOpacity onPress={() => this.getLocation()}>
+                    <View style={styles.menuBottom}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Icon name="my-location" size={25} color={Color.textDark} />
+                            <Text
+                                style={styles.buttonText}
+                            >
+                                My Location
+                </Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
             </View>
 
         );
@@ -186,7 +243,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Color.TextLight,
+        backgroundColor: Color.secondary,
     },
     menuBottom: {
         justifyContent: 'space-around',
@@ -206,4 +263,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Friends;
+export default Mapss;

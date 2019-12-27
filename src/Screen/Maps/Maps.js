@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Image } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
 import Color from '../../../public/Style/Color';
 
+
+const { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export class Maps extends Component {
 
@@ -21,7 +26,8 @@ export class Maps extends Component {
             marker: {
                 latitude: 0,
                 longitude: 0,
-            }
+            },
+            user: {},
         }
     }
 
@@ -63,39 +69,64 @@ export class Maps extends Component {
 
     async componentDidMount() {
         const data = this.props.navigation.getParam('item')
-        const lat = -6.6020341
-        const log = 106.8039733
+        const lat = Number(data.latitude)
+        const log = Number(data.longitude)
         const newMarker = { ...this.state.marker }
+        const newRegion = { ...this.state.region }
         newMarker.latitude = lat
         newMarker.longitude = log
-        console.log(newMarker)
-        this.setState({ marker: newMarker })
+        newRegion.latitude = lat
+        newRegion.longitude = log
+
+        this.setState({ marker: newMarker, user: data, region: newRegion })
     }
 
 
     render() {
         console.log(this.state.marker)
         return (
-            <View>
-                <View style={styles.container}>
-                    <MapView
-                        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-                        style={styles.map}
-                        region={this.state.region}
-                        showsTraffic={true}
-                        showsUserLocation={true}
-                        zoomControlEnabled={true}
-
+            <View
+                style={[
+                    styles.container,
+                    {
+                        justifyContent: 'flex-start',
+                        paddingHorizontal: 10,
+                        paddingTop: 10,
+                    },
+                ]}>
+                <MapView
+                    style={{ width: '100%', height: '100%' }}
+                    showsMyLocationButton={true}
+                    showsIndoorLevelPicker={true}
+                    showsUserLocation={true}
+                    zoomControlEnabled={true}
+                    showsCompass={true}
+                    showsTraffic={true}
+                    region={this.state.mapRegion}
+                    initialRegion={{
+                        latitude: Number(this.state.region.latitude),
+                        longitude: Number(this.state.region.longitude),
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA,
+                    }}>
+                    <Marker
+                        key={this.state.user.id}
+                        title={this.state.user.name}
+                        description={this.state.user.status}
+                        coordinate={{
+                            latitude: Number(this.state.marker.latitude) || 0,
+                            longitude: Number(this.state.marker.longitude) || 0,
+                        }}
                     >
-                        <Marker
-                            coordinate={this.state.marker}
-                            title="ebiebi"
-                            description="Im here"
-                            onPress={this.markerOnPress}
-                            pinColor={Color.primary}
-                        />
-                    </MapView>
-                </View>
+                        <View style={{ alignItems: 'center' }}>
+                            <Image
+                                source={{ uri: this.state.user.photo }}
+                                style={{ width: 40, height: 40, borderRadius: 50, }}
+                            />
+                            <Text style={{ fontSize: 10 }}>{this.state.user.name}</Text>
+                        </View>
+                    </Marker>
+                </MapView>
             </View>
         )
     }
@@ -103,14 +134,26 @@ export class Maps extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        ...StyleSheet.absoluteFillObject,
-        width: 500,
-        height: 400,
-        justifyContent: 'flex-start',
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: Color.TextLight,
     },
-    map: {
-        ...StyleSheet.absoluteFillObject,
+    menuBottom: {
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginHorizontal: 5,
+        marginVertical: 10,
+        borderRadius: 10,
+        width: width - 16,
+        height: 50,
+        backgroundColor: Color.lightAcent,
+    },
+    buttonText: {
+        color: Color.textDark,
+        fontSize: 16,
+        marginLeft: 5,
+        fontWeight: 'bold'
     },
 });
 

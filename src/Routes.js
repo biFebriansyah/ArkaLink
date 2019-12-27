@@ -12,6 +12,7 @@ import Maps from './Screen/Maps/Maps';
 import Chat from './Screen/chat/Chat';
 import DotsMenu from './Components/3Dots/DotsMenu';
 import ProfileEdit from './Screen/ProfileUser/ProfileEdit';
+import Mapss from './Screen/Maps/Mapss';
 
 const AppStack = createStackNavigator({
 
@@ -41,6 +42,12 @@ const AppStack = createStackNavigator({
     },
     maps: {
         screen: Maps,
+        navigationOptions: {
+            header: null
+        }
+    },
+    mapss: {
+        screen: Mapss,
         navigationOptions: {
             header: null
         }
