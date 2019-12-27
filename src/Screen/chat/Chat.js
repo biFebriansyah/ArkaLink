@@ -93,7 +93,7 @@ export default class Chat extends Component {
         }}
         textStyle={{
           right: {
-            color: Color.textDark,
+            color: Color.TextLight,
           }
 
         }}
@@ -117,7 +117,7 @@ export default class Chat extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Color.secondary }}>
+      <View style={{ flex: 1 }}>
         <GiftedChat
           renderSend={this.renderSend}
           renderBubble={this.renderBubble}

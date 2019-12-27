@@ -1,7 +1,6 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Color from '../public/Style/Color'
-
 import AppNavigators from './AppNavigator';
 import Login from './Screen/Login/Login';
 import Regis from './Screen/Regis/Regis';
@@ -11,6 +10,7 @@ import Landing from './Screen/Landing/Landing';
 import Loading from './Components/Loading/Loading';
 import Maps from './Screen/Maps/Maps';
 import Chat from './Screen/chat/Chat';
+import DotsMenu from './Components/3Dots/DotsMenu';
 
 const AppStack = createStackNavigator({
 
@@ -38,6 +38,12 @@ const AppStack = createStackNavigator({
             header: null
         }
     },
+    menus: {
+        screen: DotsMenu,
+        navigationOptions: {
+            header: null
+        }
+    },
     Apps: {
         screen: AppNavigators,
         navigationOptions: {
@@ -57,6 +63,7 @@ const AppStack = createStackNavigator({
 }, {
     initialRouteName: 'Apps',
 })
+
 
 const AuthStack = createStackNavigator({
 

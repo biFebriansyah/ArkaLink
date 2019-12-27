@@ -24,11 +24,6 @@ export class Profile extends Component {
         firebase.auth().signOut()
     }
 
-    componentDidMount() {
-        const { displayName } = firebase.auth().currentUser
-        this.setState({ name: displayName })
-    }
-
     render() {
         return (
             <>

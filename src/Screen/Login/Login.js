@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, StatusBar, Image, Text, ToastAndroid } from 'react-native'
+import { View, StyleSheet, StatusBar, Image, Text, ToastAndroid, ActivityIndicator } from 'react-native'
 import Color from '../../../public/Style/Color';
 import { Button, Item, Input, Label, Form } from 'native-base';
 import IconAnt from 'react-native-vector-icons/AntDesign';
@@ -120,7 +120,7 @@ export class Login extends Component {
     }
 
     render() {
-        if (this.state.loding) {
+        if (this.state.Onprosess) {
             return (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <ActivityIndicator />

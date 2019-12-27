@@ -24,15 +24,15 @@ export class Regis extends Component {
             errorMessage: null,
             visible: false,
             avatar: [
-                require('../../../public/Asset/Image/boy-1.png'),
-                require('../../../public/Asset/Image/boy.png'),
-                require('../../../public/Asset/Image/girl.png'),
-                require('../../../public/Asset/Image/girl-1.png'),
-                require('../../../public/Asset/Image/man.png'),
-                require('../../../public/Asset/Image/man-1.png'),
-                require('../../../public/Asset/Image/man-2.png'),
-                require('../../../public/Asset/Image/man-3.png'),
-                require('../../../public/Asset/Image/man-4.png'),
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/girl_iylyng.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/boy_dcc9kc.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/man-2_vhufzn.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/girl-1_en0ah7.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/boy-1_rhr0he.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/man-3_vwm5af.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/man-4_qvepsq.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/man-1_qr0u7e.png',
+                'https://res.cloudinary.com/cloudinara/image/upload/v1577427302/Avatar/man_jzqwnf.png'
             ]
         }
         this.goBack = this.goBack.bind(this)
@@ -83,7 +83,6 @@ export class Regis extends Component {
 
 
     async componentDidMount() {
-        const random = Math.floor(Math.random() * 9)
         try {
             const Location = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
             const Storage = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
@@ -132,6 +131,8 @@ export class Regis extends Component {
 
     submitRegis() {
         const { name, email, password } = this.state
+        const random = Math.floor(Math.random() * 9)
+        const ImageUser = this.state.avatar[random]
 
         if (!name || !email || !password) {
             this.setState({
@@ -150,13 +151,14 @@ export class Regis extends Component {
                         name: this.state.name,
                         status: 'Online',
                         email: this.state.email,
-                        photo: 'https://res.cloudinary.com/erdinsuharyadi/image/upload/v1577315841/hiringapp/assets/ava1.png',
+                        photo: ImageUser,
                         latitude: this.state.latitude || null,
                         longitude: this.state.longitude || null,
                         id: res.user.uid,
                     })
                 return res.user.updateProfile({
-                    displayName: this.state.name
+                    displayName: this.state.name,
+                    photoURL: ImageUser
                 })
             })
             .catch(err => {

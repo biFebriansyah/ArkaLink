@@ -6,9 +6,8 @@ import {
     Image,
     FlatList,
     StyleSheet,
-    ToastAndroid,
+    ActivityIndicator
 } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import Color from '../../../public/Style/Color';
@@ -23,12 +22,13 @@ export default class Home extends Component {
             id: '',
             email: '',
             displayName: '',
+            loding: false
         };
     }
 
     componentDidMount() {
         const { email, displayName, uid } = firebase.auth().currentUser;
-        this.setState({ email, displayName, uid: uid });
+        this.setState({ email, displayName, uid: uid, loding: true });
         this.getDataUser(uid)
     }
 
@@ -41,26 +41,18 @@ export default class Home extends Component {
                     return { userList: [...prevData.userList, person] };
                 });
             }
+            this.setState({ loding: false })
         });
     }
 
-    signOutUser = async () => {
-        try {
-            database()
-                .ref('user/' + this.state.uid)
-                .update({ status: 'Offline' });
-            await AsyncStorage.clear();
-            firebase.auth().signOut();
-            ToastAndroid.show('Logout success', ToastAndroid.SHORT);
-        } catch (error) {
-            this.setState({ errorMessage: error.message })
-            ToastAndroid.show('Logout error', ToastAndroid.SHORT);
-        }
-
-    };
-
     render() {
-
+        if (this.state.loding) {
+            return (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
         return (
             <View style={styles.container}>
                 <FlatList
