@@ -5,7 +5,7 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    ToastAndroid
+    ToastAndroid,
 } from 'react-native'
 import Iconaa from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/FontAwesome5';

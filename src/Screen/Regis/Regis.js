@@ -7,8 +7,7 @@ import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import storage from '@react-native-firebase/storage';
-import uuid from 'uuid/v4';
+
 
 export class Regis extends Component {
     constructor(props) {
@@ -43,42 +42,6 @@ export class Regis extends Component {
         const { goBack } = this.props.navigation;
         goBack();
     }
-
-    uploadImage = () => {
-        const ext = this.state.imgSource.split('.').pop(); // Extract image extension
-        const filename = `${uuid()}.${ext}`; // Generate unique name
-        this.setState({ uploading: true });
-        storage()
-            .ref(`userimages/${filename}`)
-            .putFile(this.state.imgSource)
-            .on(
-                firebase.storage.TaskEvent.STATE_CHANGED,
-                snapshot => {
-                    let state = {};
-                    state = {
-                        ...state,
-                        progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100 // Calculate progress percentage
-                    };
-                    if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                        const allImages = this.state.images;
-                        allImages.push(snapshot.downloadURL);
-                        state = {
-                            ...state,
-                            uploading: false,
-                            imgSource: '',
-                            imageUri: '',
-                            progress: 0,
-                            images: allImages
-                        };
-                    }
-                    this.setState(state);
-                },
-                error => {
-                    unsubscribe();
-                    alert('Sorry, Try again.');
-                }
-            );
-    };
 
 
     async componentDidMount() {
