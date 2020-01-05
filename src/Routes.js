@@ -37,9 +37,6 @@ const AppStack = createStackNavigator({
     },
     PersonalChat: {
         screen: Chat,
-        navigationOptions: {
-            header: null
-        }
     },
     PerofileFriends: {
         screen: Profile,

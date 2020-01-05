@@ -61,7 +61,7 @@ export class ProfileUser extends Component {
     };
 
     render() {
-        
+
         return (
             <View style={style.container}>
                 <View style={style.topContent}>

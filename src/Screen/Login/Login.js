@@ -123,6 +123,9 @@ export class Login extends Component {
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then(res => {
                 this.setState({ Onprosess: false })
+                firebase.auth().onAuthStateChanged(user => {
+                    this.props.navigation.navigate(user ? 'App' : 'Auth')
+                })
             })
             .catch(err => {
                 this.setState({
@@ -169,6 +172,9 @@ export class Login extends Component {
                                 fcmToken: token
                             })
                     }
+                    firebase.auth().onAuthStateChanged(user => {
+                        this.props.navigation.navigate(user ? 'App' : 'Auth')
+                    })
                 })
                 .catch(err => {
                     this.setState({

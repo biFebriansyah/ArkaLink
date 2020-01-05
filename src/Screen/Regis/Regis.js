@@ -126,33 +126,49 @@ export class Regis extends Component {
             this.setState({ Onprosess: false })
             return
         }
-        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then(res => {
-                database().ref('/users/' + res.user.uid)
-                    .set({
-                        name: this.state.name,
-                        status: 'Online',
-                        email: this.state.email,
-                        photo: ImageUser,
-                        latitude: this.state.latitude || null,
-                        longitude: this.state.longitude || null,
-                        fcmToken: token,
-                        id: res.user.uid,
-                    })
-                res.user.updateProfile({
+
+        try {
+            const userCredentials = await firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+            if (userCredentials.user) {
+                console.log(userCredentials.user)
+                const dataUser = database().ref('/users/' + userCredentials.user.uid)
+                await dataUser.set({
+                    name: this.state.name,
+                    status: 'Online',
+                    email: this.state.email,
+                    photo: ImageUser,
+                    latitude: this.state.latitude || null,
+                    longitude: this.state.longitude || null,
+                    fcmToken: token,
+                    id: userCredentials.user.uid,
+                })
+
+                await userCredentials.user.updateProfile({
                     displayName: this.state.name,
                     photoURL: ImageUser
+                }).then(async () => {
+                    await userCredentials.user.reload()
+                    console.log(firebase.auth().currentUser.displayName)
+                    firebase.auth().onAuthStateChanged(user => {
+                        this.props.navigation.navigate(user ? 'App' : 'Auth')
+                    })
                 })
-            })
-            .catch(err => {
-                this.setState({
-                    errorMessage: err.message,
-                    visible: true
-                }, () => {
-                    this.hideToast()
-                })
+
                 this.setState({ Onprosess: false })
+            }
+
+
+        } catch (error) {
+            this.setState({
+                errorMessage: "Something Wrong",
+                visible: true
+            }, () => {
+                this.hideToast()
             })
+            this.setState({ Onprosess: false })
+            return
+        }
+
     }
 
     render() {

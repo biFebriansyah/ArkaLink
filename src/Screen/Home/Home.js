@@ -26,11 +26,16 @@ export default class Home extends Component {
         };
     }
 
-    componentDidMount() {
+    setupUser = () => {
         const { email, displayName, uid } = firebase.auth().currentUser;
+        console.log(displayName)
         this.setState({ email, displayName, uid: uid, loding: true });
         this.getDataUser(uid)
         this.setStatus(uid)
+    }
+
+    componentDidMount() {
+        this.setupUser()
     }
 
     async getDataUser(uid) {
