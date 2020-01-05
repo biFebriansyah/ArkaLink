@@ -19,6 +19,7 @@ export class ProfileUser extends Component {
         super(props)
 
         this.state = {
+            isFocused: true,
             name: '',
             email: '',
             avatar: 'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/boy_dcc9kc.png',
@@ -34,6 +35,14 @@ export class ProfileUser extends Component {
     componentDidMount() {
         const { displayName, email, photoURL, uid } = auth().currentUser
         this.setState({ name: displayName, email, avatar: photoURL, uid })
+        this.subs = [
+            this.props.navigation.addListener("didFocus", () => {
+                this.setState({ isFocused: true })
+            }),
+            this.props.navigation.addListener("willBlur", () => {
+                this.setState({ isFocused: false })
+            })
+        ];
     }
 
 
@@ -52,6 +61,7 @@ export class ProfileUser extends Component {
     };
 
     render() {
+        
         return (
             <View style={style.container}>
                 <View style={style.topContent}>

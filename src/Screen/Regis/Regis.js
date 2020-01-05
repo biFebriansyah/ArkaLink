@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, StatusBar, Image, Text, ToastAndroid } from 'react-native'
+import { View, StyleSheet, StatusBar, Image, Text, ToastAndroid, ActivityIndicator } from 'react-native'
 import Color from '../../../public/Style/Color';
 import { Button, Item, Input, Label, Form } from 'native-base';
 import IconAnt from 'react-native-vector-icons/AntDesign';
@@ -7,6 +7,7 @@ import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import fcm from '@react-native-firebase/messaging';
 
 
 export class Regis extends Component {
@@ -16,10 +17,12 @@ export class Regis extends Component {
         this.state = {
             latitude: '',
             longitude: '',
+            fcmToken: '',
             name: '',
             email: '',
             password: '',
             errorMessage: null,
+            Onprosess: false,
             visible: false,
             avatar: [
                 'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/girl_iylyng.png',
@@ -40,6 +43,22 @@ export class Regis extends Component {
     goBack() {
         const { goBack } = this.props.navigation;
         goBack();
+    }
+
+    getfcmToken = async () => {
+        try {
+            let enable = await fcm().hasPermission()
+            if (!enable) {
+                const getPermission = await fcm().requestPermission()
+                enable = getPermission
+            }
+            if (enable) {
+                const token = await fcm().getToken()
+                return token
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
@@ -90,7 +109,9 @@ export class Regis extends Component {
         });
     };
 
-    submitRegis() {
+    async submitRegis() {
+        this.setState({ Onprosess: true })
+        const token = await this.getfcmToken()
         const { name, email, password } = this.state
         const random = Math.floor(Math.random() * 9)
         const ImageUser = this.state.avatar[random]
@@ -102,6 +123,7 @@ export class Regis extends Component {
             }, () => {
                 this.hideToast()
             })
+            this.setState({ Onprosess: false })
             return
         }
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -114,14 +136,12 @@ export class Regis extends Component {
                         photo: ImageUser,
                         latitude: this.state.latitude || null,
                         longitude: this.state.longitude || null,
+                        fcmToken: token,
                         id: res.user.uid,
                     })
                 res.user.updateProfile({
                     displayName: this.state.name,
                     photoURL: ImageUser
-                })
-                firebase.auth().onAuthStateChanged(user => {
-                    this.props.navigation.navigate(user ? 'LoadScreen' : 'Auth')
                 })
             })
             .catch(err => {
@@ -131,11 +151,18 @@ export class Regis extends Component {
                 }, () => {
                     this.hideToast()
                 })
+                this.setState({ Onprosess: false })
             })
     }
 
     render() {
-
+        if (this.state.Onprosess) {
+            return (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
         return (
             <View style={style.container}>
                 <IconAnt name="arrowleft" size={24} color={Color.TextLight} onPress={this.goBack} style={style.Back} />
@@ -202,7 +229,9 @@ const style = StyleSheet.create({
         flex: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Color.TextLight
+        backgroundColor: Color.TextLight,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40
     },
     img: {
         width: null,

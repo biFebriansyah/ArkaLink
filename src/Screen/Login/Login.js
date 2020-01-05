@@ -6,6 +6,9 @@ import IconAnt from 'react-native-vector-icons/AntDesign';
 import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import { PermissionsAndroid } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import fcm from '@react-native-firebase/messaging';
 
 export class Login extends Component {
 
@@ -17,7 +20,10 @@ export class Login extends Component {
             password: '',
             visible: false,
             errorMessage: null,
-            Onprosess: false
+            Onprosess: false,
+            latitude: '',
+            longitude: '',
+            fcmToken: ''
         }
 
         this.goBack = this.goBack.bind(this);
@@ -35,11 +41,85 @@ export class Login extends Component {
         });
     };
 
+    getfcmToken = async () => {
+        try {
+            let enable = await fcm().hasPermission()
+            if (!enable) {
+                const getPermission = await fcm().requestPermission()
+                enable = getPermission
+            }
+            if (enable) {
+                const token = await fcm().getToken()
+                return token
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async componentDidMount() {
+        try {
+            const Location = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+            const Storage = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+            if (Location === PermissionsAndroid.RESULTS.GRANTED) {
+                Geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords
+                        this.setState({ latitude, longitude })
+                    },
+                    (error) => {
+                        this.setState({
+                            errorMessage: "Check youre GPS",
+                            visible: true
+                        }, () => {
+                            this.hideToast()
+                        })
+                        return
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );
+            } else {
+                this.setState({
+                    errorMessage: "location denied",
+                    visible: true
+                }, () => {
+                    this.hideToast()
+                })
+                return
+            }
+
+        } catch (error) {
+            this.setState({
+                errorMessage: "SomeThing Worng",
+                visible: true
+            }, () => {
+                this.hideToast()
+            })
+        }
+    }
+
+    hideToast = () => {
+        this.setState({
+            visible: false,
+        });
+    };
+
 
 
     loginSubmit = () => {
         this.setState({ Onprosess: true })
         const { email, password } = this.state
+
+        if (!email || !password) {
+            this.setState({
+                errorMessage: "name, email and password isEmpty",
+                visible: true,
+                Onprosess: false
+            }, () => {
+                this.hideToast()
+            })
+            return
+        }
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then(res => {
                 this.setState({ Onprosess: false })
@@ -47,6 +127,7 @@ export class Login extends Component {
             .catch(err => {
                 this.setState({
                     errorMessage: err.message,
+                    Onprosess: false,
                     visible: true
                 }, () => this.hideToast())
             })
@@ -55,6 +136,7 @@ export class Login extends Component {
     loginGoole = async () => {
         this.setState({ Onprosess: true })
         try {
+            const token = await this.getfcmToken()
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             const { idToken, accessToken } = userInfo
@@ -72,6 +154,7 @@ export class Login extends Component {
                                 latitude: this.state.latitude || null,
                                 longitude: this.state.longitude || null,
                                 id: res.user.uid,
+                                fcmToken: token
                             })
                     } else {
                         database().ref('/users/' + res.user.uid)
@@ -83,11 +166,16 @@ export class Login extends Component {
                                 latitude: this.state.latitude || null,
                                 longitude: this.state.longitude || null,
                                 id: res.user.uid,
+                                fcmToken: token
                             })
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    this.setState({
+                        errorMessage: err,
+                        Onprosess: false,
+                        visible: true
+                    }, () => this.hideToast())
                 })
             this.setState({ Onprosess: false })
 
@@ -201,7 +289,9 @@ const style = StyleSheet.create({
         flex: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Color.TextLight
+        backgroundColor: Color.TextLight,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40
     },
     img: {
         width: null,

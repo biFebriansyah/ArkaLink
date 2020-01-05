@@ -5,13 +5,33 @@ import {
   Send,
 } from 'react-native-gifted-chat';
 import Color from '../../../public/Style/Color';
-import AsyncStorage from '@react-native-community/async-storage';
 import { Bubble, } from 'react-native-gifted-chat';
 import database, { firebase } from '@react-native-firebase/database';
+import { Icon } from 'native-base'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import auth from '@react-native-firebase/auth';
 
 export default class Chat extends Component {
+
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: 
+      <TouchableOpacity onPress={() => navigation.navigate('FriendProfile', { item: navigation.getParam('item') })}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View>
+            <Image source={{ uri: navigation.getParam('item').photo }} style={{ width: 45, height: 45, borderRadius: 100, overflow: 'hidden', marginRight: 10, backgroundColor: Color.darkprimary }} />
+          </View>
+            <View>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', }}>{navigation.getParam('item').name}</Text>
+              <Text style={{color: 'white'}}>{navigation.getParam('item').status}</Text>
+            </View>
+        </View>
+      </TouchableOpacity>,
+      headerStyle: {
+        backgroundColor: Color.primary,
+      },
+    };
+  };
 
   state = {
     message: '',
@@ -103,12 +123,8 @@ export default class Chat extends Component {
   renderSend(props) {
     return (
       <Send {...props}>
-        <View
-          style={{
-            marginRight: 20,
-            marginBottom: 5,
-          }}>
-          <Ionicons name='ios-paper-plane' size={35} color={Color.primary} />
+        <View>
+            <Icon name='send-circle-outline' type='MaterialCommunityIcons' size={30} color={Color.primary} />
         </View>
       </Send>
     );

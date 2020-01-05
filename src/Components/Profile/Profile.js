@@ -10,7 +10,8 @@ export class Profile extends Component {
         super(props)
 
         this.state = {
-            data: []
+            data: [],
+            avatar: 'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/boy_dcc9kc.png',
         }
         this.goBack = this.goBack.bind(this);
     }
@@ -27,6 +28,7 @@ export class Profile extends Component {
     componentDidMount() {
         const data = this.props.navigation.getParam('item')
         this.setState({ data })
+        console.log(data)
     }
 
     render() {

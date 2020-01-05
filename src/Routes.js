@@ -13,6 +13,7 @@ import Chat from './Screen/chat/Chat';
 import DotsMenu from './Components/3Dots/DotsMenu';
 import ProfileEdit from './Screen/ProfileUser/ProfileEdit';
 import Mapss from './Screen/Maps/Mapss';
+import Test from './Screen/test/Test';
 
 const AppStack = createStackNavigator({
 
@@ -40,6 +41,9 @@ const AppStack = createStackNavigator({
             header: null
         }
     },
+    PerofileFriends: {
+        screen: Profile,
+    },
     maps: {
         screen: Maps,
         navigationOptions: {
@@ -54,6 +58,12 @@ const AppStack = createStackNavigator({
     },
     menus: {
         screen: DotsMenu,
+        navigationOptions: {
+            header: null
+        }
+    },
+    test: {
+        screen: Test,
         navigationOptions: {
             header: null
         }

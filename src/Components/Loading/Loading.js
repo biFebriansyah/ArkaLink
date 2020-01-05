@@ -7,7 +7,18 @@ export class Loading extends Component {
 
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
-            this.props.navigation.navigate(user ? 'App' : 'Auth')
+            
+            if (user) {
+                console.log(user)
+                if (user.displayName) {
+                    this.props.navigation.navigate('App')
+                } else {
+                    firebase.auth().signOut()
+                    this.props.navigation.navigate('Login')
+                }
+            } else {
+                this.props.navigation.navigate('Auth')
+            }
         })
     }
 

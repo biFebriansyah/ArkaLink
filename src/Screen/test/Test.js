@@ -13,7 +13,7 @@ import database from '@react-native-firebase/database';
 import Color from '../../../public/Style/Color';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons'
 
-export default class Home extends Component {
+export default class Test extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -72,13 +72,14 @@ export default class Home extends Component {
                     renderItem={({ item }) =>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('PersonalChat', { item })}>
                             <View style={styles.listItem}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('PersonalChat', { item })}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('maps', { item })}>
                                     <Image source={{ uri: item.photo }} style={styles.pic} />
                                 </TouchableOpacity>
 
-                                <View style={{ flex: 8, marginLeft: 10, }}>
+                                <View style={styles.Listtitle}>
                                     <Text style={{ fontWeight: "bold", fontSize: 18, color: Color.textDark }}>{item.name}</Text>
                                     <Text style={styles.email}>{item.email}</Text>
+                                    <Text style={styles.email}> </Text>
                                 </View>
                                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
@@ -111,10 +112,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#fafafafa",
         width: "100%",
         flex: 1,
-        borderBottomWidth: 1,
-        borderColor: '#DCDCDC',
         alignSelf: "center",
         flexDirection: "row",
+        alignItems: 'center'
+    },
+    Listtitle: {
+        borderBottomWidth: 1,
+        borderColor: '#E9ECEF',
+        flex: 8,
+        marginLeft: 10,
     },
     divider: {
         marginVertical: 5,
@@ -133,8 +139,8 @@ const styles = StyleSheet.create({
     },
     pic: {
         borderRadius: 30,
-        width: 60,
-        height: 60,
+        width: 55,
+        height: 55,
     },
     nameContainer: {
         flexDirection: 'row',
