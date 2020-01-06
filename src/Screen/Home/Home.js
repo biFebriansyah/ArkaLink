@@ -77,7 +77,7 @@ export default class Home extends Component {
                     renderItem={({ item }) =>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('PersonalChat', { item })}>
                             <View style={styles.listItem}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('PersonalChat', { item })}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('PerofileFriends', { item })}>
                                     <Image source={{ uri: item.photo }} style={styles.pic} />
                                 </TouchableOpacity>
 

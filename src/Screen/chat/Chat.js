@@ -1,37 +1,41 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, } from 'react-native';
 import {
   GiftedChat,
   Send,
 } from 'react-native-gifted-chat';
 import Color from '../../../public/Style/Color';
-import { Bubble, } from 'react-native-gifted-chat';
+import { Bubble, InputToolbar } from 'react-native-gifted-chat';
 import database, { firebase } from '@react-native-firebase/database';
 import { Icon } from 'native-base'
-import Ionicons from 'react-native-vector-icons/Ionicons'
-import auth from '@react-native-firebase/auth';
 
 export default class Chat extends Component {
 
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: 
-      <TouchableOpacity onPress={() => navigation.navigate('FriendProfile', { item: navigation.getParam('item') })}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View>
-            <Image source={{ uri: navigation.getParam('item').photo }} style={{ width: 45, height: 45, borderRadius: 100, overflow: 'hidden', marginRight: 10, backgroundColor: Color.darkprimary }} />
-          </View>
+      headerTitle:
+        <TouchableOpacity onPress={() => navigation.navigate('PerofileFriends', { item: navigation.getParam('item') })}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View>
+              <Image source={{ uri: navigation.getParam('item').photo }} style={{ width: 40, height: 40, borderRadius: 100, overflow: 'hidden', marginRight: 10, backgroundColor: Color.darkprimary }} />
+            </View>
             <View>
               <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', }}>{navigation.getParam('item').name}</Text>
-              <Text style={{color: 'white'}}>{navigation.getParam('item').status}</Text>
+              <Text style={{ color: 'white' }}>{navigation.getParam('item').status}</Text>
             </View>
-        </View>
-      </TouchableOpacity>,
+          </View>
+        </TouchableOpacity>,
       headerStyle: {
         backgroundColor: Color.primary,
       },
+      headerLeft: (
+        <TouchableOpacity onPress={() => navigation.goBack()}
+          style={{ padding: 10 }}>
+          <Icon size={27} name='arrowleft' style={{ color: '#fff' }} type='AntDesign' />
+        </TouchableOpacity>
+      )
     };
-  };
+  }
 
   state = {
     message: '',
@@ -120,11 +124,17 @@ export default class Chat extends Component {
     );
   }
 
+  renderInputToolbar(props) {
+    return (
+      <InputToolbar {...props} containerStyle={style.inputToolBar} />
+    )
+  }
+
   renderSend(props) {
     return (
       <Send {...props}>
-        <View>
-            <Icon name='send-circle-outline' type='MaterialCommunityIcons' size={30} color={Color.primary} />
+        <View style={style.icons}>
+          <Icon name='send-circle-outline' type='MaterialCommunityIcons' style={style.icon} />
         </View>
       </Send>
     );
@@ -135,8 +145,13 @@ export default class Chat extends Component {
       <View style={{ flex: 1 }}>
         <GiftedChat
           renderSend={this.renderSend}
+          alwaysShowSend={true}
           renderBubble={this.renderBubble}
+          textInputProps={{ autoFocus: true }}
+          textInputStyle={style.textInputStyle}
+          renderInputToolbar={this.renderInputToolbar}
           text={this.state.message}
+          alignTop={true}
           onInputTextChanged={val => {
             this.setState({ message: val });
           }}
@@ -150,3 +165,28 @@ export default class Chat extends Component {
     );
   }
 }
+
+const style = StyleSheet.create({
+  icon: {
+    color: Color.primary,
+    fontSize: 40
+  },
+  inputToolBar: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 0,
+  },
+  textInputStyle: {
+    fontSize: 16,
+    borderWidth: 1,
+    marginBottom: 0,
+    marginRight: 10,
+    alignItems: 'center',
+    borderRadius: 5
+  },
+  icons: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 5
+  }
+})

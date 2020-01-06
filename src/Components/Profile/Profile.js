@@ -1,16 +1,36 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, TouchableHighlight } from 'react-native'
+import { Text, View, StyleSheet, TouchableHighlight, Image, TouchableOpacity } from 'react-native'
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import { Header } from 'native-base';
 import Color from '../../../public/Style/Color';
 import { firebase } from '@react-native-firebase/auth';
+import Iconaa from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icons from 'react-native-vector-icons/FontAwesome5';
+import Icon from 'react-native-vector-icons/AntDesign';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 
 export class Profile extends Component {
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+          headerTitle: "Profile",
+          headerStyle: {
+            backgroundColor: Color.primary,
+          },
+          headerLeft: (
+            <TouchableOpacity onPress={() => navigation.goBack()}
+              style={{ padding: 10 }}>
+              <Icon size={27} name='arrowleft' style={{ color: '#fff' }} type='AntDesign' />
+            </TouchableOpacity>
+          )
+        };
+      }
+
     constructor(props) {
         super(props)
 
         this.state = {
-            data: [],
+            data: {},
             avatar: 'https://res.cloudinary.com/cloudinara/image/upload/v1577427303/Avatar/boy_dcc9kc.png',
         }
         this.goBack = this.goBack.bind(this);
@@ -36,7 +56,7 @@ export class Profile extends Component {
             <View style={style.container}>
                 <View style={style.topContent}>
                     <View style={style.AvatarContainer}>
-                        <Image source={{ uri: this.state.avatar }} style={style.Avatar} />
+                        <Image source={{ uri: this.state.data.photo }} style={style.Avatar} />
                     </View>
                 </View>
                 <View style={style.dataUser}>
@@ -47,7 +67,7 @@ export class Profile extends Component {
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             <Iconaa size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>test</Text>
+                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>{this.state.data.name}</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }}>
@@ -57,7 +77,7 @@ export class Profile extends Component {
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             <Iconaa size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>{this.state.email}</Text>
+                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>{this.state.data.email}</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }} onPress={this.goEdit}>
@@ -70,16 +90,6 @@ export class Profile extends Component {
                             <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>setting youre account</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }} onPress={this.signOutUser}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Iconaa name="logout" size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 16, marginLeft: 6 }}>Logout</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Icon size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>Logout user</Text>
-                        </View>
-                    </TouchableOpacity>
                 </View>
             </View>
         )
@@ -88,25 +98,29 @@ export class Profile extends Component {
 
 const style = StyleSheet.create({
     container: {
+        flex: 1
+    },
+    Avatar: {
+        width: null,
+        height: null,
+        resizeMode: "cover",
+        flex: 1,
+        borderRadius: 110
+    },
+    topContent: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 30
     },
-    Header: {
-        backgroundColor: Color.primary,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingLeft: 20
+    AvatarContainer: {
+        width: 120,
+        height: 120,
     },
-    HeaderText: {
-        color: Color.TextLight,
-        fontFamily: 'Roboto-Bold',
-        fontSize: 20
-    },
-    Icon: {
-        marginRight: 20
-    },
-
+    dataUser: {
+        flex: 3,
+        marginTop: 50,
+    }
 })
 
 export default Profile

@@ -38,8 +38,8 @@ export class ProfileEdit extends Component {
     uploadImage = async () => {
         if (!this.state.imgSource) { return }
         this.setState({ loding: true })
-        const ext = this.state.imgSource.path.split('.').pop(); // Extract image extension
-        const filename = `${uuid()}.${ext}`; // Generate unique name
+        const ext = this.state.imgSource.path.split('.').pop();
+        const filename = `${uuid()}.${ext}`;
         this.setState({ uploading: true });
         const dataRef = firebase.storage().ref(`userImages/${filename}`)
         dataRef.putFile(this.state.imgSource.path)
