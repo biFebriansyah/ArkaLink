@@ -160,7 +160,7 @@ export class Friends extends Component {
                                     longitude: Number(item.longitude) || 0,
                                 }}
                                 onCalloutPress={() => {
-                                    this.props.navigation.navigate('FriendProfile', {
+                                    this.props.navigation.navigate('PerofileFriends', {
                                         item,
                                     });
                                 }}>

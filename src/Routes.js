@@ -72,7 +72,7 @@ const AppStack = createStackNavigator({
                 backgroundColor: Color.primary,
                 elevation: 0
             },
-            headerTitle: 'ArkaLink',
+            headerTitle: 'ArkaChat',
             headerTitleStyle: {
                 color: 'white',
                 fontFamily: 'Roboto-Bold',

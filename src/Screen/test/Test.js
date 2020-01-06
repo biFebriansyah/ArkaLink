@@ -6,12 +6,13 @@ import {
     Image,
     FlatList,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import Color from '../../../public/Style/Color';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons'
+import { SearchBar } from 'react-native-elements';
 
 export default class Test extends Component {
     constructor(props) {
@@ -56,6 +57,48 @@ export default class Test extends Component {
         }
     }
 
+    searchFilterFunction = text => {
+        this.setState({
+            value: text,
+        });
+
+        const newData = this.arrayholder.filter(item => {
+            const itemData = `${item.name.toUpperCase()} ${item.skill.toUpperCase()} ${item.location.toUpperCase()}`;
+            const textData = text.toUpperCase();
+
+            return itemData.indexOf(textData) > -1;
+        });
+        this.setState({
+            data: newData,
+        });
+    };
+
+    renderSeparator = () => {
+        return (
+            <View
+                style={{
+                    height: 1,
+                    width: '86%',
+                    backgroundColor: '#CED0CE',
+                    marginLeft: '14%',
+                }}
+            />
+        );
+    };
+
+    renderHeader = () => {
+        return (
+            <SearchBar
+                placeholder="Search"
+                lightTheme
+                round
+                onChangeText={text => this.searchFilterFunction(text)}
+                autoCorrect={false}
+                value={this.state.value}
+            />
+        );
+    };
+
     render() {
         if (this.state.loding) {
             return (
@@ -95,6 +138,8 @@ export default class Test extends Component {
 
                     }
                     keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={this.renderSeparator}
+                    ListHeaderComponent={this.renderHeader}
                 />
             </View>
         );

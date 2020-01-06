@@ -12,6 +12,7 @@ import { firebase } from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import Color from '../../../public/Style/Color';
 import Material from 'react-native-vector-icons/MaterialCommunityIcons'
+import { SearchBar } from 'react-native-elements';
 
 export default class Home extends Component {
     constructor(props) {
@@ -22,7 +23,8 @@ export default class Home extends Component {
             id: '',
             email: '',
             displayName: '',
-            loding: false
+            loding: false,
+            arrayholder: []
         };
     }
 
@@ -44,7 +46,7 @@ export default class Home extends Component {
             let person = data.val();
             if (person.id !== uid) {
                 this.setState(prevData => {
-                    return { userList: [...prevData.userList, person] };
+                    return { userList: [...prevData.userList, person], arrayholder: [...prevData.userList, person] };
                 });
             }
             this.setState({ loding: false })
@@ -60,6 +62,48 @@ export default class Home extends Component {
             console.log(error)
         }
     }
+
+    searchFilterFunction = text => {
+        this.setState({
+            value: text,
+        });
+
+        const newData = this.state.arrayholder.filter(item => {
+            const itemData = `${item.name.toUpperCase()} `;
+            const textData = text.toUpperCase();
+
+            return itemData.indexOf(textData) > -1;
+        });
+        this.setState({
+            userList: newData,
+        });
+    };
+
+    renderSeparator = () => {
+        return (
+            <View
+                style={{
+                    height: 1,
+                    width: '86%',
+                    backgroundColor: '#fff',
+                    marginLeft: '14%',
+                }}
+            />
+        );
+    };
+
+    renderHeader = () => {
+        return (
+            <SearchBar
+                placeholder="Search"
+                lightTheme
+                round
+                onChangeText={text => this.searchFilterFunction(text)}
+                autoCorrect={false}
+                value={this.state.value}
+            />
+        );
+    };
 
     render() {
         if (this.state.loding) {
@@ -99,6 +143,8 @@ export default class Home extends Component {
 
                     }
                     keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={this.renderSeparator}
+                    ListHeaderComponent={this.renderHeader}
                 />
             </View>
         );

@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TouchableHighlight, Image, TouchableOpacity } from 'react-native'
-import IconAnt from 'react-native-vector-icons/AntDesign';
-import { Header } from 'native-base';
 import Color from '../../../public/Style/Color';
 import { firebase } from '@react-native-firebase/auth';
 import Iconaa from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,18 +11,18 @@ export class Profile extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-          headerTitle: "Profile",
-          headerStyle: {
-            backgroundColor: Color.primary,
-          },
-          headerLeft: (
-            <TouchableOpacity onPress={() => navigation.goBack()}
-              style={{ padding: 10 }}>
-              <Icon size={27} name='arrowleft' style={{ color: '#fff' }} type='AntDesign' />
-            </TouchableOpacity>
-          )
+            headerTitle: <Text style={{ fontSize: 20, color: '#fff' }}>Profile</Text>,
+            headerStyle: {
+                backgroundColor: Color.primary,
+            },
+            headerLeft: (
+                <TouchableOpacity onPress={() => navigation.goBack()}
+                    style={{ padding: 10 }}>
+                    <Icon size={27} name='arrowleft' style={{ color: '#fff' }} type='AntDesign' />
+                </TouchableOpacity>
+            )
         };
-      }
+    }
 
     constructor(props) {
         super(props)
@@ -49,6 +47,11 @@ export class Profile extends Component {
         const data = this.props.navigation.getParam('item')
         this.setState({ data })
         console.log(data)
+    }
+
+    goMap = () => {
+        const item = this.state.data
+        this.props.navigation.navigate('maps', { item })
     }
 
     render() {
@@ -80,14 +83,14 @@ export class Profile extends Component {
                             <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>{this.state.data.email}</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }} onPress={this.goEdit}>
+                    <TouchableOpacity style={{ marginTop: 40, marginLeft: 29, }} onPress={this.goMap}>
                         <View style={{ flexDirection: 'row' }}>
-                            <IonIcon name="ios-options" size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 16, marginLeft: 6 }}>Option</Text>
+                            <Iconaa name="google-maps" size={20} style={{ width: 20, height: 20, color: "black" }} />
+                            <Text style={{ fontSize: 16, marginLeft: 6 }}>Map</Text>
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             <Icon size={20} style={{ width: 20, height: 20, color: "black" }} />
-                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>setting youre account</Text>
+                            <Text style={{ fontSize: 15, marginLeft: 6, color: '#888' }}>See on the map</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -98,7 +101,8 @@ export class Profile extends Component {
 
 const style = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: Color.primary
     },
     Avatar: {
         width: null,
@@ -111,15 +115,18 @@ const style = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 30
+        backgroundColor: Color.primary
     },
     AvatarContainer: {
         width: 120,
         height: 120,
     },
     dataUser: {
-        flex: 3,
-        marginTop: 50,
+        flex: 2,
+        paddingTop: 50,
+        backgroundColor: Color.TextLight,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
     }
 })
 
